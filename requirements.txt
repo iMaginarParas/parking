@@ -1,5 +1,6 @@
 fastapi
 uvicorn
-sqlalchemy
-requests
 pydantic
+python-dotenv
+requests
+supabase

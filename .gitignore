@@ -1,0 +1,18 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+env/
+
+# Environment variables (CRITICAL: Keeps your secrets safe)
+.env
+
+# Local databases (if you use SQLite for testing)
+*.db
+*.sqlite3
+
+# IDE settings
+.vscode/
+.idea/
