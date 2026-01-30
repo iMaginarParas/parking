@@ -16,3 +16,6 @@ env/
 # IDE settings
 .vscode/
 .idea/
+
+# Frontend files to ignore
+index.html
