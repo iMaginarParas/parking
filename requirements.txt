@@ -7,3 +7,4 @@ supabase
 qrcode[pil]
 pillow
 python-multipart
+razorpay
