@@ -10,8 +10,8 @@ from supabase import create_client, Client
 load_dotenv()
 
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_URL        = os.getenv("SUPABASE_URL")
+SUPABASE_KEY        = os.getenv("SUPABASE_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise ValueError("Supabase URL or Key is missing in .env file")
@@ -62,12 +62,12 @@ def get_address_from_google(lat: float, lng: float) -> str:
         return "Address lookup disabled"
     url = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={GOOGLE_MAPS_API_KEY}"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)
         data = response.json()
         if data.get("status") == "OK":
             return data["results"][0]["formatted_address"]
         return "Address not found"
-    except:
+    except Exception:
         return "Error retrieving address"
 
 # ─── AUTH ENDPOINTS ──────────────────────────────────────────────────────────
@@ -88,10 +88,10 @@ def verify_otp(body: VerifyOTPRequest):
         auth_response = supabase.auth.verify_otp({
             "phone": body.phone,
             "token": body.token,
-            "type": "sms",
+            "type":  "sms",
         })
         session = auth_response.session
-        user = auth_response.user
+        user    = auth_response.user
         if not session or not user:
             raise HTTPException(status_code=401, detail="OTP verification failed")
         return AuthResponse(
@@ -118,8 +118,8 @@ def refresh_token(body: dict):
         if not session:
             raise HTTPException(status_code=401, detail="Could not refresh session")
         return {
-            "status": "success",
-            "access_token": session.access_token,
+            "status":        "success",
+            "access_token":  session.access_token,
             "refresh_token": session.refresh_token,
         }
     except HTTPException:
@@ -138,9 +138,9 @@ def logout(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)):
 @app.get("/auth/me")
 def get_me(current_user=Depends(get_current_user)):
     return {
-        "status": "success",
-        "user_id": str(current_user.id),
-        "phone": current_user.phone,
+        "status":     "success",
+        "user_id":    str(current_user.id),
+        "phone":      current_user.phone,
         "created_at": str(current_user.created_at),
     }
 

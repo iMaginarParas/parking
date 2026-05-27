@@ -76,7 +76,7 @@ def create_razorpay_order(body: CreateOrderRequest, current_user=Depends(get_cur
         order = rzp_client.order.create({
             "amount":   amount_paise,
             "currency": "INR",
-            "receipt":  f"wallet_{current_user.id[:8]}_{int(datetime.now().timestamp())}",
+            "receipt":  f"wallet_{str(current_user.id)[:8]}_{int(datetime.now().timestamp())}",
             "notes": {
                 "user_id": str(current_user.id),
                 "purpose": "wallet_topup",
@@ -116,7 +116,10 @@ def topup_wallet(body: WalletTopup, current_user=Depends(get_current_user)):
     ).hexdigest()
 
     if not hmac.compare_digest(expected_signature, body.razorpay_signature):
-        raise HTTPException(status_code=400, detail="Payment signature verification failed. Do not retry.")
+        raise HTTPException(
+            status_code=400,
+            detail="Payment signature verification failed. Do not retry.",
+        )
 
     # ── 2. Fetch payment from Razorpay and confirm status + amount ────────────
     try:
@@ -182,7 +185,7 @@ def get_transactions(current_user=Depends(get_current_user)):
 def _require_admin(current_user=Depends(get_current_user)):
     """Dependency: raises 403 if the user is not an admin."""
     meta     = getattr(current_user, "user_metadata", {}) or {}
-    app_meta = getattr(current_user, "app_metadata", {}) or {}
+    app_meta = getattr(current_user, "app_metadata",  {}) or {}
     if meta.get("role") != "admin" and app_meta.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
     return current_user
